@@ -3,44 +3,71 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agenda de Turnos</title>
+<title>Calendario de Capacitación</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&family=Kalam:wght@400;700&display=swap');
 
 :root{
-  --board: #F3F0E8;
-  --cell: #FFFFFF;
-  --band: #1C1C22;
-  --weekend-bg: #F5C518;
-  --ink: #1C1C22;
-  --muted: #8A8779;
-  --line: #E4E0D3;
-  --gold: #F5C518;
-  --red: #C0392B;
+  --board-1: #120C24;
+  --board-2: #241850;
+  --panel: #1E1738;
+  --panel-2: #241C46;
+  --line: rgba(255,255,255,0.09);
+  --ink: #F1EEFA;
+  --muted: #A79FC7;
+  --accent: #9D6FEB;
+  --accent-2: #6C4FD9;
+  --weekend-bg: #7C4FE0;
+  --gold: #241C46;
+  --band: #150F2C;
+  --red: #FF7A6E;
   --s1: #F4A340;
-  --s1-ink: #6b3d05;
+  --s1-ink: #3a2405;
   --s2: #7FD8C4;
-  --s2-ink: #0d4a3f;
+  --s2-ink: #06231d;
   --s3: #F2A6C5;
-  --s3-ink: #6b1f42;
+  --s3-ink: #3a1224;
   --s4: #B9AEDD;
-  --s4-ink: #3a2a63;
+  --s4-ink: #241a3f;
 }
 
 *{box-sizing:border-box;}
 
 body{
   margin:0;
-  background: var(--board);
   color: var(--ink);
   font-family: 'Inter', sans-serif;
   min-height:100vh;
-  padding: 28px 20px 70px;
+  padding: 28px 20px 100px;
+  background:
+    radial-gradient(1.6px 1.6px at 12% 18%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1.4px 1.4px at 28% 42%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.8px 1.8px at 46% 12%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1.3px 1.3px at 62% 55%, rgba(255,255,255,0.45), transparent),
+    radial-gradient(1.6px 1.6px at 78% 22%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1.4px 1.4px at 88% 65%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.3px 1.3px at 8% 75%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1.6px 1.6px at 35% 85%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.3px 1.3px at 55% 92%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1.6px 1.6px at 95% 88%, rgba(255,255,255,0.5), transparent),
+    linear-gradient(160deg, var(--board-1) 0%, #1A1240 45%, var(--board-2) 100%);
+  background-attachment: fixed;
 }
 
 .wrap{
-  max-width: 980px;
+  max-width: 1060px;
   margin: 0 auto;
+}
+
+.layout{
+  display:grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 22px;
+  align-items: start;
+}
+
+@media (max-width: 860px){
+  .layout{ grid-template-columns: 1fr; }
 }
 
 .topbar{
@@ -61,6 +88,8 @@ body{
   padding: 12px 22px;
   border-radius: 999px;
   display:inline-block;
+  border: 1px solid rgba(157,111,235,0.4);
+  box-shadow: 0 0 22px -6px rgba(157,111,235,0.55);
 }
 
 .sub{
@@ -81,13 +110,13 @@ body{
   width: 34px; height: 34px;
   border-radius: 50%;
   border: 1.5px solid var(--line);
-  background: #fff;
+  background: var(--panel);
   font-size: 16px;
   cursor: pointer;
   color: var(--ink);
-  transition: background 0.15s ease, transform 0.15s ease;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
-.nav button:hover{ background: var(--gold); transform: translateY(-1px); }
+.nav button:hover{ background: var(--weekend-bg); color: #fff; transform: translateY(-1px); box-shadow: 0 0 16px -4px rgba(124,79,224,0.7); }
 .nav button:disabled{ opacity: 0.35; cursor: default; transform:none; }
 
 .nav h2{
@@ -97,20 +126,21 @@ body{
   min-width: 168px;
   text-align:center;
   text-transform: capitalize;
+  color: var(--ink);
 }
 
 .board-frame{
-  background: var(--cell);
-  border-radius: 6px;
+  background: var(--panel);
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 22px 50px -28px rgba(0,0,0,0.35);
+  box-shadow: 0 0 0 1px var(--line), 0 24px 50px -28px rgba(0,0,0,0.75);
   border: 1px solid var(--line);
 }
 
 .weekday-row{
   display:grid;
   grid-template-columns: repeat(7, 1fr);
-  background: var(--cell);
+  background: var(--panel);
   border-bottom: 1.5px solid var(--line);
 }
 
@@ -126,7 +156,7 @@ body{
 .weekday-row div:last-child{ border-right:none; }
 .weekday-row div.weekend{
   background: var(--weekend-bg);
-  color: var(--ink);
+  color: #fff;
 }
 
 .day-grid{
@@ -135,54 +165,68 @@ body{
 }
 
 .day-cell{
-  min-height: 148px;
+  min-height: 78px;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  padding: 8px;
+  padding: 6px;
   position: relative;
   cursor: pointer;
-  transition: background 0.12s ease;
-  background: var(--cell);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.12s ease;
+  background: var(--panel);
 }
 .day-cell:nth-child(7n){ border-right:none; }
-.day-cell.blank{ cursor:default; background: #FAF9F5; }
-.day-cell.weekend{ background: #FBF6DC; cursor: default; }
-.day-cell.past{ opacity: 0.45; cursor: default; }
-.day-cell:not(.blank):not(.weekend):not(.past):hover{ background: #FCF8EC; }
-.day-cell.selected{ outline: 2.5px solid var(--ink); outline-offset: -2.5px; }
+.day-cell.blank{ cursor:default; background: rgba(255,255,255,0.015); }
+.day-cell.weekend{ background: rgba(124,79,224,0.12); cursor: default; }
+.day-cell.past{ opacity: 0.4; cursor: default; }
+
+.day-cell:not(.blank):not(.weekend):not(.past){
+  box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset, 0 3px 8px -4px rgba(0,0,0,0.6);
+}
+.day-cell:not(.blank):not(.weekend):not(.past):hover{
+  background: rgba(157,111,235,0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 0 0 1px rgba(157,111,235,0.5), 0 14px 22px -10px rgba(124,79,224,0.55), 0 3px 8px -4px rgba(0,0,0,0.6);
+  z-index: 2;
+}
+.day-cell.selected{
+  transform: translateY(1px);
+  background: rgba(157,111,235,0.16);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.5), 0 0 0 2px var(--accent);
+}
 .day-cell.today .day-num{
-  background: var(--ink);
+  background: var(--accent);
   color: #fff;
   border-radius: 50%;
+  box-shadow: 0 0 10px -1px rgba(157,111,235,0.9);
 }
 
 .day-num{
   font-family:'Poppins', sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  width: 22px; height: 22px;
+  width: 19px; height: 19px;
   display:flex; align-items:center; justify-content:center;
   color: var(--ink);
 }
 
 .chips{
-  margin-top: 6px;
+  margin-top: 4px;
   display:flex;
   flex-direction:column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .chip{
   font-family: 'Kalam', cursive;
-  font-size: 12.5px;
+  font-size: 10.5px;
   font-weight: 700;
-  padding: 3px 7px;
+  padding: 2px 6px;
   border-radius: 4px;
-  line-height: 1.25;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  box-shadow: 0 3px 6px -3px rgba(0,0,0,0.35);
+  box-shadow: 0 3px 6px -3px rgba(0,0,0,0.5);
 }
 .chip.s1{ background: var(--s1); color: var(--s1-ink); transform: rotate(-1.2deg); }
 .chip.s2{ background: var(--s2); color: var(--s2-ink); transform: rotate(1deg); }
@@ -190,18 +234,36 @@ body{
 .chip.s4{ background: var(--s4); color: var(--s4-ink); transform: rotate(1.1deg); }
 
 .composer{
-  margin-top: 22px;
+  position: sticky;
+  top: 20px;
+}
+
+.placeholder{
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
   display:none;
 }
-.composer.show{ display:block; }
+.composer.empty .placeholder{ display:block; }
+.composer.empty #composerSlots{ display:none; }
+.composer.empty .close-btn{ display:none; }
+.composer:not(.empty) .placeholder{ display:none; }
 
 .sticky{
-  background: var(--gold);
-  border-radius: 6px;
-  padding: 22px 26px;
-  box-shadow: 0 20px 40px -22px rgba(0,0,0,0.45);
+  background: var(--panel-2);
+  border-radius: 8px;
+  padding: 20px 20px;
+  box-shadow: 0 0 0 1px rgba(157,111,235,0.3), 0 18px 34px -20px rgba(0,0,0,0.7);
   position: relative;
-  transform: rotate(-0.4deg);
+  overflow: hidden;
+}
+.sticky::before{
+  content:"";
+  position:absolute;
+  top:0; left:0; right:0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), #E68FD0, var(--accent));
 }
 
 .sticky-head{
@@ -217,6 +279,7 @@ body{
   font-size: 18px;
   margin: 0;
   text-transform: capitalize;
+  color: var(--ink);
 }
 
 .close-btn{
@@ -224,36 +287,36 @@ body{
   border: none;
   font-size: 18px;
   cursor: pointer;
-  color: var(--ink);
+  color: var(--muted);
   line-height:1;
   padding: 4px;
 }
+.close-btn:hover{ color: var(--ink); }
 
 .slot-line{
   display:flex;
-  align-items:center;
-  gap: 14px;
-  background: rgba(255,255,255,0.55);
-  border-radius: 5px;
-  padding: 12px 14px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 11px 12px;
+  margin-bottom: 9px;
 }
 .slot-line:last-child{ margin-bottom:0; }
 
 .slot-time{
   font-family:'Poppins', sans-serif;
   font-weight: 600;
-  font-size: 14.5px;
-  min-width: 96px;
+  font-size: 13.5px;
+  color: var(--ink);
 }
 
 .slot-body{
-  flex:1;
   display:flex;
   align-items:center;
-  gap: 10px;
-  min-width: 200px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -261,30 +324,64 @@ body{
   font-family:'Kalam', cursive;
   font-weight: 700;
   font-size: 14.5px;
+  color: var(--ink);
+}
+
+.type-tag{
+  font-family:'Poppins', sans-serif;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(157,111,235,0.22);
+  color: #D8C8FA;
+  border: 1px solid rgba(157,111,235,0.4);
+  white-space: nowrap;
 }
 
 .name-form{
   display:flex;
   gap: 8px;
   flex: 1;
-  min-width: 220px;
+  width: 100%;
+  flex-wrap: wrap;
 }
 
 .name-form input[type="text"]{
   font-family:'Inter';
   font-size: 13.5px;
   padding: 8px 10px;
-  border-radius: 4px;
-  border: 1.5px solid rgba(0,0,0,0.15);
-  background: #fff;
+  border-radius: 5px;
+  border: 1.5px solid var(--line);
+  background: rgba(255,255,255,0.05);
+  color: var(--ink);
   flex:1;
-  min-width: 0;
+  min-width: 100px;
 }
-.name-form input[type="text"]:focus{ outline: 2px solid var(--ink); }
+.name-form input[type="text"]::placeholder{ color: var(--muted); }
+.name-form input[type="text"]:focus{ outline: 2px solid var(--accent); }
 .name-form input[type="text"].input-taken{
-  background: #E4E0D3;
+  background: rgba(255,255,255,0.02);
   color: var(--muted);
   cursor: not-allowed;
+}
+
+.type-select{
+  font-family: 'Inter';
+  font-size: 12.5px;
+  padding: 8px 8px;
+  border-radius: 5px;
+  border: 1.5px solid var(--line);
+  background: rgba(255,255,255,0.05);
+  color: var(--ink);
+  cursor: pointer;
+}
+.type-select:focus{ outline: 2px solid var(--accent); }
+.type-select:disabled{
+  background: rgba(255,255,255,0.02);
+  color: var(--muted);
+  cursor: not-allowed;
+  opacity: 1;
 }
 
 .btn.btn-cancel{
@@ -292,23 +389,23 @@ body{
   color: var(--red);
   border: 1.5px solid var(--red);
 }
-.btn.btn-cancel:hover{ background: rgba(192,57,43,0.08); }
+.btn.btn-cancel:hover{ background: rgba(255,122,110,0.12); }
 
 .btn{
   font-family:'Poppins', sans-serif;
   font-size: 12.5px;
   font-weight: 600;
-  background: var(--band);
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: #fff;
   border: none;
   padding: 8px 15px;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor:pointer;
   white-space: nowrap;
-  transition: transform 0.12s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
-.btn:hover{ transform: translateY(-1px); }
-.btn:disabled{ opacity: 0.55; cursor: default; transform:none; }
+.btn:hover{ transform: translateY(-1px); box-shadow: 0 6px 14px -6px rgba(124,79,224,0.7); }
+.btn:disabled{ opacity: 0.55; cursor: default; transform:none; box-shadow:none; }
 
 .notice{
   font-size: 13px;
@@ -334,10 +431,52 @@ body{
   grid-column: 1 / -1;
 }
 
+.wa-float{
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #25D366;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 10px 26px -8px rgba(37,211,102,0.7), 0 0 0 1px rgba(255,255,255,0.15);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  z-index: 50;
+}
+.wa-float:hover{ transform: translateY(-3px) scale(1.04); box-shadow: 0 14px 30px -8px rgba(37,211,102,0.85), 0 0 0 1px rgba(255,255,255,0.2); }
+.wa-float svg{ width: 30px; height: 30px; }
+
+.wa-bar{
+  max-width: 1060px;
+  margin: 30px auto 0;
+  display:flex;
+  justify-content:center;
+}
+.wa-link{
+  display:inline-flex;
+  align-items:center;
+  gap: 10px;
+  background: #25D366;
+  color: #08331C;
+  font-family:'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  text-decoration:none;
+  box-shadow: 0 10px 24px -10px rgba(37,211,102,0.6);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.wa-link:hover{ transform: translateY(-2px); box-shadow: 0 14px 28px -10px rgba(37,211,102,0.75); }
+.wa-link svg{ width: 20px; height: 20px; }
+
 @media (max-width: 640px){
-  .weekday-row div{ font-size: 10.5px; padding: 8px 3px; }
-  .day-cell{ min-height: 118px; padding: 5px; }
-  .chip{ font-size: 10.5px; }
+  .weekday-row div{ font-size: 10px; padding: 6px 2px; }
+  .day-cell{ min-height: 64px; padding: 4px; }
+  .chip{ font-size: 9.5px; }
 }
 </style>
 </head>
@@ -345,7 +484,7 @@ body{
 <div class="wrap">
   <div class="topbar">
     <div>
-      <div class="badge">Agenda de turnos</div>
+      <div class="badge">Calendario de Capacitación</div>
       <p class="sub">Tocá un día de lunes a viernes para reservar 16:00–17:00, 17:00–18:00, 19:00–20:00 o 20:00–21:00.</p>
     </div>
     <div class="nav">
@@ -355,32 +494,44 @@ body{
     </div>
   </div>
 
-  <div class="board-frame">
-    <div class="weekday-row" id="weekdayRow"></div>
-    <div class="day-grid" id="dayGrid">
-      <div class="loading-row">Cargando el tablero…</div>
-    </div>
-  </div>
-
-  <div class="composer" id="composer">
-    <div class="sticky">
-      <div class="sticky-head">
-        <h3 id="composerTitle"></h3>
-        <button class="close-btn" id="closeComposer" aria-label="Cerrar">✕</button>
+  <div class="layout">
+    <div class="board-frame">
+      <div class="weekday-row" id="weekdayRow"></div>
+      <div class="day-grid" id="dayGrid">
+        <div class="loading-row">Cargando el tablero…</div>
       </div>
-      <div id="composerSlots"></div>
-      <p class="notice" id="composerNotice"></p>
     </div>
+
+    <aside class="composer empty" id="composer">
+      <div class="sticky">
+        <div class="sticky-head">
+          <h3 id="composerTitle">Elegí un día</h3>
+          <button class="close-btn" id="closeComposer" aria-label="Cerrar">✕</button>
+        </div>
+        <p class="placeholder">Tocá un día hábil (hoy o futuro) en el calendario para ver o reservar sus turnos.</p>
+        <div id="composerSlots"></div>
+        <p class="notice" id="composerNotice"></p>
+      </div>
+    </aside>
   </div>
 
   <p class="footer-note">Agenda compartida: todas las personas que la abran ven y reservan los mismos turnos.</p>
 </div>
 
+<div class="wa-bar">
+  <a class="wa-link" href="https://wa.me/541141732329" target="_blank" rel="noopener">
+    <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.386.7 4.61 1.906 6.484L4 29l7.71-1.867A11.93 11.93 0 0 0 16 27c6.627 0 12-5.373 12-12S22.628 3 16.001 3zm0 21.75c-1.96 0-3.79-.55-5.35-1.5l-.383-.227-4.578 1.11 1.13-4.47-.25-.398A9.71 9.71 0 0 1 5.25 15c0-5.936 4.814-10.75 10.75-10.75S26.75 9.064 26.75 15 21.936 24.75 16.001 24.75zm5.98-8.06c-.328-.164-1.94-.957-2.24-1.066-.3-.11-.518-.164-.737.164-.219.328-.847 1.066-1.038 1.285-.191.219-.383.246-.71.082-.328-.164-1.386-.51-2.64-1.628-.976-.87-1.635-1.945-1.827-2.273-.191-.328-.02-.505.144-.668.148-.147.328-.383.492-.575.164-.191.219-.328.328-.547.11-.219.055-.41-.027-.574-.082-.164-.737-1.777-1.011-2.434-.266-.64-.537-.553-.737-.563l-.628-.011c-.219 0-.574.082-.875.41-.3.328-1.148 1.121-1.148 2.734 0 1.613 1.176 3.172 1.34 3.39.164.219 2.316 3.535 5.61 4.957.784.338 1.396.54 1.873.692.787.25 1.503.215 2.07.13.632-.094 1.94-.793 2.213-1.559.273-.766.273-1.422.191-1.559-.082-.137-.3-.219-.629-.383z"/></svg>
+    Escribinos por WhatsApp
+  </a>
+</div>
+
+<a class="wa-float" href="https://wa.me/541141732329" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">
+  <svg viewBox="0 0 32 32" fill="#fff"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.386.7 4.61 1.906 6.484L4 29l7.71-1.867A11.93 11.93 0 0 0 16 27c6.627 0 12-5.373 12-12S22.628 3 16.001 3zm0 21.75c-1.96 0-3.79-.55-5.35-1.5l-.383-.227-4.578 1.11 1.13-4.47-.25-.398A9.71 9.71 0 0 1 5.25 15c0-5.936 4.814-10.75 10.75-10.75S26.75 9.064 26.75 15 21.936 24.75 16.001 24.75zm5.98-8.06c-.328-.164-1.94-.957-2.24-1.066-.3-.11-.518-.164-.737.164-.219.328-.847 1.066-1.038 1.285-.191.219-.383.246-.71.082-.328-.164-1.386-.51-2.64-1.628-.976-.87-1.635-1.945-1.827-2.273-.191-.328-.02-.505.144-.668.148-.147.328-.383.492-.575.164-.191.219-.328.328-.547.11-.219.055-.41-.027-.574-.082-.164-.737-1.777-1.011-2.434-.266-.64-.537-.553-.737-.563l-.628-.011c-.219 0-.574.082-.875.41-.3.328-1.148 1.121-1.148 2.734 0 1.613 1.176 3.172 1.34 3.39.164.219 2.316 3.535 5.61 4.957.784.338 1.396.54 1.873.692.787.25 1.503.215 2.07.13.632-.094 1.94-.793 2.213-1.559.273-.766.273-1.422.191-1.559-.082-.137-.3-.219-.629-.383z"/></svg>
+</a>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ── Configuración de Supabase ──────────────────────────────────────
-// Pegá acá la URL de tu proyecto y la anon public key
-// (Supabase → Settings → API). Instrucciones completas al pie del chat.
 const SUPABASE_URL = 'https://gubuxugmvwduyesipygk.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_W38dTjnNptY5JYpxSrul-Q_HTSE3bFY';
 
@@ -408,6 +559,7 @@ const SLOTS = [
   {hour:19, label:'19:00–20:00', cls:'s3'},
   {hour:20, label:'20:00–21:00', cls:'s4'}
 ];
+const TYPE_OPTIONS = ['Presencial', 'Virtual'];
 
 const now = new Date();
 let viewYear = now.getFullYear();
@@ -418,7 +570,6 @@ let selectedISO = null;
 function pad(n){ return String(n).padStart(2,'0'); }
 function isoOf(y,m,d){ return `${y}-${pad(m+1)}-${pad(d)}`; }
 function todayISO(){ return isoOf(now.getFullYear(), now.getMonth(), now.getDate()); }
-function monthKey(y,m){ return `${y}-${pad(m+1)}`; }
 function jsWeekday(y,m,d){
   const wd = new Date(y,m,d).getDay();
   return wd === 0 ? 6 : wd - 1;
@@ -442,14 +593,14 @@ async function fetchMonthObj(year, month){
   try{
     const { data, error } = await supabaseClient
       .from('bookings')
-      .select('date, hour, name')
+      .select('date, hour, name, type')
       .gte('date', first)
       .lte('date', last);
     if(error){ console.error(error); return {}; }
     const obj = {};
     (data || []).forEach(row => {
       if(!obj[row.date]) obj[row.date] = {};
-      obj[row.date][row.hour] = { name: row.name };
+      obj[row.date][row.hour] = { name: row.name, type: row.type || 'Presencial' };
     });
     return obj;
   }catch(err){
@@ -501,7 +652,8 @@ function renderMonth(){
         if(b && b.name){
           const chip = document.createElement('div');
           chip.className = `chip ${s.cls}`;
-          chip.textContent = `${s.hour}h ${b.name}`;
+          const abbr = b.type === 'Virtual' ? 'V' : 'P';
+          chip.textContent = `${s.hour}h ${b.name} (${abbr})`;
           chips.appendChild(chip);
         }
       });
@@ -526,10 +678,9 @@ function openComposer(iso){
   selectedISO = iso;
   composerTitle.textContent = formatLong(iso);
   composerNotice.classList.remove('show');
-  composer.classList.add('show');
+  composer.classList.remove('empty');
   renderComposerSlots();
   renderMonth();
-  composer.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 function renderComposerSlots(){
@@ -559,10 +710,23 @@ function renderComposerSlots(){
     input.placeholder = 'Tu nombre';
     input.maxLength = 60;
     input.setAttribute('aria-label', `Nombre para el turno de ${s.hour}:00`);
+
+    const select = document.createElement('select');
+    select.className = 'type-select';
+    TYPE_OPTIONS.forEach(opt => {
+      const o = document.createElement('option');
+      o.value = opt;
+      o.textContent = opt;
+      select.appendChild(o);
+    });
+    select.setAttribute('aria-label', `Modalidad para el turno de ${s.hour}:00`);
+
     if(isTaken){
       input.value = booking.name;
       input.disabled = true;
       input.classList.add('input-taken');
+      select.value = booking.type || 'Presencial';
+      select.disabled = true;
     } else {
       input.required = true;
     }
@@ -575,18 +739,20 @@ function renderComposerSlots(){
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       if(isTaken){
-        cancelSlot(s.hour, btn, input);
+        cancelSlot(s.hour, btn, input, select);
       } else {
         input.disabled = true;
         input.classList.add('input-taken');
+        select.disabled = true;
         btn.textContent = 'Cancelar';
         btn.classList.add('btn-cancel');
         btn.disabled = true;
-        bookSlot(s.hour, input.value.trim(), btn, input);
+        bookSlot(s.hour, input.value.trim(), select.value, btn, input, select);
       }
     });
 
     form.appendChild(input);
+    form.appendChild(select);
     form.appendChild(btn);
     body.appendChild(form);
 
@@ -595,12 +761,13 @@ function renderComposerSlots(){
   });
 }
 
-async function bookSlot(hour, name, btn, input){
+async function bookSlot(hour, name, type, btn, input, select){
   if(!name){
     composerNotice.textContent = 'Escribí un nombre antes de reservar.';
     composerNotice.classList.add('show');
     input.disabled = false;
     input.classList.remove('input-taken');
+    select.disabled = false;
     btn.disabled = false;
     btn.textContent = 'Reservar';
     btn.classList.remove('btn-cancel');
@@ -614,6 +781,7 @@ async function bookSlot(hour, name, btn, input){
     composerNotice.classList.add('show');
     input.disabled = false;
     input.classList.remove('input-taken');
+    select.disabled = false;
     btn.disabled = false;
     btn.textContent = 'Reservar';
     btn.classList.remove('btn-cancel');
@@ -623,7 +791,7 @@ async function bookSlot(hour, name, btn, input){
   try{
     const { error } = await supabaseClient
       .from('bookings')
-      .insert({ date: selectedISO, hour, name });
+      .insert({ date: selectedISO, hour, name, type });
 
     if(error){
       composerNotice.textContent = (error.code === '23505')
@@ -644,13 +812,14 @@ async function bookSlot(hour, name, btn, input){
     composerNotice.classList.add('show');
     input.disabled = false;
     input.classList.remove('input-taken');
+    select.disabled = false;
     btn.disabled = false;
     btn.textContent = 'Reservar';
     btn.classList.remove('btn-cancel');
   }
 }
 
-async function cancelSlot(hour, btn, input){
+async function cancelSlot(hour, btn, input, select){
   const ok = window.confirm('¿Cancelar este turno y dejarlo libre?');
   if(!ok) return;
 
@@ -692,7 +861,8 @@ async function cancelSlot(hour, btn, input){
 }
 
 closeComposer.addEventListener('click', () => {
-  composer.classList.remove('show');
+  composer.classList.add('empty');
+  composerTitle.textContent = 'Elegí un día';
   selectedISO = null;
   renderMonth();
 });
