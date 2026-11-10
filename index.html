@@ -256,7 +256,28 @@ body{
   padding: 20px 20px;
   box-shadow: 0 0 0 1px rgba(157,111,235,0.3), 0 18px 34px -20px rgba(0,0,0,0.7);
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: calc(100vh - 40px);
+}
+@media (max-width: 860px){
+  .sticky{ max-height: none; }
+}
+.day-meta{
+  font-size: 12px;
+  color: var(--muted);
+  margin: -6px 0 14px;
+  line-height: 1.45;
+}
+.period-note{
+  background: rgba(157,111,235,0.14);
+  border: 1px solid rgba(157,111,235,0.4);
+  color: #D8C8FA;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 14px;
 }
 .sticky::before{
   content:"";
@@ -485,7 +506,7 @@ body{
   <div class="topbar">
     <div>
       <div class="badge">Calendario de Capacitación</div>
-      <p class="sub">Tocá un día de lunes a viernes para reservar 16:00–17:00, 17:00–18:00, 18:00–19:00 o 19:00–20:00.</p>
+      <p class="sub">Tocá un día de lunes a viernes para reservar (máximo 4 horas por día). Del 16 al 27 de noviembre: solo virtual, de 09:00 a 18:00. Resto de los días: 16:00 a 20:00.</p>
     </div>
     <div class="nav">
       <button id="prevBtn" aria-label="Mes anterior">‹</button>
@@ -553,13 +574,27 @@ const closeComposer = document.getElementById('closeComposer');
 
 const WEEKDAYS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
 const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-const SLOTS = [
-  {hour:16, label:'16:00–17:00', cls:'s1'},
-  {hour:17, label:'17:00–18:00', cls:'s2'},
-  {hour:18, label:'18:00–19:00', cls:'s3'},
-  {hour:19, label:'19:00–20:00', cls:'s4'}
-];
+// Máximo de horas que se pueden agendar por día
+const MAX_PER_DAY = 4;
+
+// Período especial: solo Virtual, de 09:00 a 18:00 (lunes 16 a viernes 27 de noviembre)
+const VIRTUAL_PERIOD = { start: '2026-11-16', end: '2026-11-27' };
+const VIRTUAL_HOURS = [9, 10, 11, 12, 13, 14, 15, 16, 17];
+// Horario habitual: 16:00 a 20:00, Presencial (Viedma) o Virtual
+const NORMAL_HOURS = [16, 17, 18, 19];
+
 const TYPE_OPTIONS = ['Presencial', 'Virtual'];
+
+function hourLabel(h){ return `${String(h).padStart(2,'0')}:00–${String(h+1).padStart(2,'0')}:00`; }
+function isVirtualPeriod(iso){ return iso >= VIRTUAL_PERIOD.start && iso <= VIRTUAL_PERIOD.end; }
+function slotClass(h){ return 's' + ((h % 4) + 1); }
+function slotsFor(iso){
+  const hours = isVirtualPeriod(iso) ? VIRTUAL_HOURS : NORMAL_HOURS;
+  return hours.map(h => ({ hour: h, label: hourLabel(h), cls: slotClass(h) }));
+}
+function typesFor(iso){
+  return isVirtualPeriod(iso) ? ['Virtual'] : TYPE_OPTIONS;
+}
 
 const now = new Date();
 let viewYear = now.getFullYear();
@@ -647,16 +682,19 @@ function renderMonth(){
     if(dayBookings){
       const chips = document.createElement('div');
       chips.className = 'chips';
-      SLOTS.forEach(s => {
-        const b = dayBookings[s.hour];
-        if(b && b.name){
-          const chip = document.createElement('div');
-          chip.className = `chip ${s.cls}`;
-          const abbr = b.type === 'Virtual' ? 'V' : 'P';
-          chip.textContent = `${s.hour}h ${b.name} (${abbr})`;
-          chips.appendChild(chip);
-        }
-      });
+      Object.keys(dayBookings)
+        .map(Number)
+        .sort((a, b) => a - b)
+        .forEach(h => {
+          const b = dayBookings[h];
+          if(b && b.name){
+            const chip = document.createElement('div');
+            chip.className = `chip ${slotClass(h)}`;
+            const abbr = b.type === 'Virtual' ? 'V' : 'P';
+            chip.textContent = `${h}h ${b.name} (${abbr})`;
+            chips.appendChild(chip);
+          }
+        });
       cell.appendChild(chips);
     }
 
@@ -686,8 +724,27 @@ function openComposer(iso){
 function renderComposerSlots(){
   composerSlots.innerHTML = '';
   const dayBookings = monthData[selectedISO] || {};
+  const virtualOnly = isVirtualPeriod(selectedISO);
+  const bookedCount = Object.values(dayBookings).filter(b => b && b.name).length;
+  const dayFull = bookedCount >= MAX_PER_DAY;
 
-  SLOTS.forEach(s => {
+  // Aviso del día: modalidad y cupo diario
+  const meta = document.createElement('div');
+  meta.className = 'day-meta';
+  meta.textContent = (virtualOnly
+    ? 'Solo reuniones virtuales, de 09:00 a 18:00. '
+    : 'Presencial (solo Viedma) o virtual, de 16:00 a 20:00. ')
+    + `Turnos reservados: ${bookedCount} de ${MAX_PER_DAY}.`;
+  composerSlots.appendChild(meta);
+
+  if(dayFull){
+    const full = document.createElement('div');
+    full.className = 'period-note';
+    full.textContent = `Este día ya alcanzó el máximo de ${MAX_PER_DAY} horas. Para reservar otro horario, cancelá uno existente o elegí otro día.`;
+    composerSlots.appendChild(full);
+  }
+
+  slotsFor(selectedISO).forEach(s => {
     const line = document.createElement('div');
     line.className = 'slot-line';
 
@@ -713,7 +770,12 @@ function renderComposerSlots(){
 
     const select = document.createElement('select');
     select.className = 'type-select';
-    TYPE_OPTIONS.forEach(opt => {
+    const availableTypes = typesFor(selectedISO);
+    // Si ya hay un turno guardado con otra modalidad, se muestra tal cual
+    const optionsToShow = (isTaken && booking.type && !availableTypes.includes(booking.type))
+      ? [booking.type]
+      : availableTypes;
+    optionsToShow.forEach(opt => {
       const o = document.createElement('option');
       o.value = opt;
       o.textContent = opt;
@@ -725,16 +787,24 @@ function renderComposerSlots(){
       input.value = booking.name;
       input.disabled = true;
       input.classList.add('input-taken');
-      select.value = booking.type || 'Presencial';
+      select.value = booking.type || optionsToShow[0];
+      select.disabled = true;
+    } else if(dayFull){
+      // Día completo: no se pueden tomar más horarios
+      input.disabled = true;
+      input.classList.add('input-taken');
+      input.placeholder = 'Día completo';
       select.disabled = true;
     } else {
       input.required = true;
+      if(virtualOnly) select.disabled = true; // única opción: Virtual
     }
 
     const btn = document.createElement('button');
     btn.type = 'submit';
     btn.className = isTaken ? 'btn btn-cancel' : 'btn';
     btn.textContent = isTaken ? 'Cancelar' : 'Reservar';
+    if(!isTaken && dayFull) btn.disabled = true;
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -789,6 +859,21 @@ async function bookSlot(hour, name, type, btn, input, select){
   }
 
   try{
+    // Modalidad forzada en el período virtual
+    if(isVirtualPeriod(selectedISO)) type = 'Virtual';
+
+    // Tope diario: se revisa con datos frescos antes de guardar
+    const fresh = await fetchMonthObj(viewYear, viewMonth);
+    const takenToday = Object.values(fresh[selectedISO] || {}).filter(b => b && b.name).length;
+    if(takenToday >= MAX_PER_DAY){
+      composerNotice.textContent = `Este día ya alcanzó el máximo de ${MAX_PER_DAY} horas.`;
+      composerNotice.classList.add('show');
+      monthData = fresh;
+      renderComposerSlots();
+      renderMonth();
+      return;
+    }
+
     const { error } = await supabaseClient
       .from('bookings')
       .insert({ date: selectedISO, hour, name, type });
